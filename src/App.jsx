@@ -25,8 +25,13 @@ useEffect(()=>{
       const apiKey="6081d1b8f05c40ab3af7d357dcaf3128"
     const response=await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${showData}&appid=${apiKey}`)
   const data= await response.json()
+
+  if(data.cod === 200){
   setWeatherData(data)
-  setError("")  //reset error 
+  } else{
+  setError("Not Found") 
+  }
+
  
   console.log(data)
   } catch (error){
@@ -61,7 +66,13 @@ useEffect(()=>{
   const newBackground= getBackground(weatherCondition);
   setBackground(newBackground);
   console.log("bg")
-  },[weatherData])
+  },[weatherData]);
+
+  useEffect(()=>{
+if(error){
+  setBackground("url('https://th.bing.com/th/id/OIP.yJGfiCEzzc-7lvFxWDVgVwHaFx?w=172&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7')")
+}
+  },[error])
 
 
   return(
@@ -74,12 +85,11 @@ useEffect(()=>{
     }}
     >
       <h1 className="text-3xl [200px] text-white rounded-lg bg-blue-200 p-2">Weather App</h1>
-      <input
+      { !error &&  <input
      className="h-[40px] w-full border outline-0 px-4 block m-0 mx-auto rounded-[30px] bg-white"
     onChange={handleInput}
-    />
+    /> }
 
-{ <p style={{color:"red"}}>{error}</p> }
 
 { weatherData?.name  &&  !error &&
       (<div>
@@ -92,10 +102,12 @@ useEffect(()=>{
     Temperature: {(weatherData?.main?.temp - 273.15).toFixed(2)}ºC
   </h2>
 
-      <p className="text-md text-white px-4">Min: {(weatherData?.main?.temp_max-273.15).toFixed(2)}°C </p>
-        <p> Max: {(weatherData?.main?.temp_min -273.15).toFixed(2)}°C </p>
+      <p className="text-md text-white text-center px-4">Max: {(weatherData?.main?.temp_max-273.15).toFixed(2)}°C </p>
+        <p className="text-md text-center text-white px-4"> Min: {(weatherData?.main?.temp_min -273.15).toFixed(2)}°C </p>
     </div>
+
 )  }
+{ error &&  <p className="text-red-600 p-1 mt-[210px]  text-2xl">{error}</p> }
 
     </div>
   )
